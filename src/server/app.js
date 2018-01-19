@@ -4,6 +4,7 @@ let express = require('express'),
     http = require('http'),
     socket = require('socket.io'),
     uuid = require('uuid/v4'),
+    mysql = require('mysql'),
     path = require('path');
 //import * as enum from '../js/enum';
 
@@ -12,6 +13,26 @@ let app = express(),
     server = http.Server(app),
     io = socket.listen(server),
     port = process.env.PORT || 8081;
+//#endregion
+
+//#region MySQL DB connection
+let dbConnection = mysql.createConnection({
+    host: 'localhost',
+    user: 'crud_user',
+    password: 'crudpassword',
+    database: 'crud_demo'
+});
+
+dbConnection.connect(function(err) {
+    if (err != null) {
+        Logger.log(`Database connection failed: ${err}`, Logger.types.error);
+    }
+
+    else {
+        Logger.log(`Database connected`, Logger.types.general);
+    }
+});
+
 //#endregion
 
 //#region Serve Client Files
