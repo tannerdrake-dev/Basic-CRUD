@@ -12,7 +12,8 @@ let express = require('express'),
 let app = express(),
     server = http.Server(app),
     io = socket.listen(server),
-    port = process.env.PORT || 8081;
+    port = process.env.PORT || 8081,
+    DB_NAME = 'crud_demo';
 //#endregion
 
 //#region Serve Client Files
@@ -37,8 +38,14 @@ io.on('connection', function(socket) {
     Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
 
     queryDB('show tables', dbConnection, function (res) {
-        Logger.log(`ROWS: ${res.rows}`, Logger.types.dbEvent);
-        Logger.log(`FIELDS: ${res.fields}`, Logger.types.dbEvent);
+        let tableNames = [],
+            propName = `Tables_in_${DB_NAME}`;
+
+        for (let i = 0, j = res.rows.length; i < j; i++) {
+            tableNames.push(res.rows[i][propName]);
+        }
+
+        Logger.log(`Tables: ${tableNames}`, Logger.types.general);
     });
 });
 
@@ -49,7 +56,7 @@ let dbConnection = mysql.createConnection({
     host: 'localhost',
     user: 'crud_user',
     password: 'crudpassword',
-    database: 'crud_demo'
+    database: DB_NAME
 });
 
 dbConnection.connect(function(err) {
@@ -72,7 +79,11 @@ function queryDB (query, connection, callback) {
         };
 
         if (err != null) {
-            Logger.log(`QUERY: ${query} failed: ${err}`, Logger.types.dbEvent);
+            Logger.log(`QUERY: ${query} failed - ${err}`, Logger.types.dbEvent);
+        }
+
+        else {
+            Logger.log(`QUERY: ${query} succeeded`, Logger.types.dbEvent)
         }
 
         if (callback != null) {
