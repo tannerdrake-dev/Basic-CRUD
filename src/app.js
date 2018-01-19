@@ -15,6 +15,35 @@ let app = express(),
     port = process.env.PORT || 8081;
 //#endregion
 
+//#region Serve Client Files
+app.use('/css', express.static(__dirname + '/css')); 
+app.use('/js', express.static(__dirname + '/js')); 
+ 
+app.get('/', function(req, res){ 
+    res.sendFile(__dirname+'/index.html'); 
+}); 
+
+app.get('/', function(req, res){
+    res.sendFile(__dirname + '/index.html');
+});
+//#endregion
+
+//#region Server Start/Events
+server.listen(port, function() {
+    Logger.log('Server started...', Logger.types.general);
+});
+
+io.on('connection', function(socket) {
+    Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
+
+    queryDB('show tables', dbConnection, function (res) {
+        Logger.log(`ROWS: ${res.rows}`, Logger.types.dbEvent);
+        Logger.log(`FIELDS: ${res.fields}`, Logger.types.dbEvent);
+    });
+});
+
+//#endregion
+
 //#region MySQL DB connection
 let dbConnection = mysql.createConnection({
     host: 'localhost',
@@ -26,6 +55,7 @@ let dbConnection = mysql.createConnection({
 dbConnection.connect(function(err) {
     if (err != null) {
         Logger.log(`Database connection failed: ${err}`, Logger.types.error);
+        return;
     }
 
     else {
@@ -33,25 +63,23 @@ dbConnection.connect(function(err) {
     }
 });
 
-//#endregion
+function queryDB (query, connection, callback) {
+    connection.query(query, function (err, rows, fields) {
+        let result = {
+            error: err,
+            rows: rows,
+            fields: fields
+        };
 
-//#region Serve Client Files
-app.use('/css', express.static(__dirname + '/css'));
-app.use('/js', express.static(__dirname + '/js'));
+        if (err != null) {
+            Logger.log(`QUERY: ${query} failed: ${err}`, Logger.types.dbEvent);
+        }
 
-app.get('/', function(req, res){
-    res.sendFile(path.resolve(__dirname + '/../index.html'));
-});
-//#endregion
-
-//#region Server Start/Events
-server.listen(port, function() {
-    Logger.log('Server started...', Logger.types.general);
-});
-
-io.on('connection', function(socket) {
-    Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
-});
+        if (callback != null) {
+            callback(result);
+        }
+    });
+}
 
 //#endregion
 
