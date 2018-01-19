@@ -1,0 +1,20 @@
+{
+  "name": "crud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "Node.js",
+    "socket.io",
+    "express.js"
+  ],
+  "author": "Tanner Drake",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3",
+    "uuid": "^3.1.0"
+  }
+}
