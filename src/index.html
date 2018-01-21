@@ -6,10 +6,10 @@
     </head>
     <body class='body'>
         <div class='top-button-row'>
-            <button class='top-buttons'>
+            <button id='new-record-button' class='top-buttons'>
                 New Record
             </button>
-            <button class='top-buttons'>
+            <button id='delete-record-button' class='top-buttons'>
                 Delete Record
             </button>
         </div>
@@ -51,7 +51,28 @@
                 </tr>
         </table>
         <div class='side-col-info'>
-
+            <select id='table-list' class='table-list' multiple>
+                <option>Table 1</option>
+                <option>Table 2</option>
+                <option>Table 3</option>
+            </select>
+            <button id='new-table-button' class='side-list-buttons'>
+                New Table
+            </button>
+            <button id='delete-table-button' class='side-list-buttons'>
+                Delete Table 
+            </button>
+            <select id='column-list' class='column-list' multiple>
+                    <option>Column 1</option>
+                    <option>Column 2</option>
+                    <option>Column 3</option>
+                </select>
+                <button id='new-column-button' class='side-list-buttons'>
+                    New Column
+                </button>
+                <button id='delete-column-button' class='side-list-buttons'>
+                    Delete Column 
+                </button>
         </div>
     </body>
     <script src="js/enum.js"></script>
