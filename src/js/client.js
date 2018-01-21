@@ -1,5 +1,16 @@
 let Client = {};
 
-Client.socket = io.connect();
+function init() {
+    Client.socket = io.connect();
 
-console.log(Client.socket);
+    Client.domRefs = {};
+
+    let tableRef = document.getElementById('table-dom');
+    if (tableRef != null) {
+        Client.domRefs.table = tableRef;
+    }
+}
+
+document.onload = function () {
+    init();
+}
