@@ -53,6 +53,36 @@ function init() {
     //#endregion
 }
 
+//#region DOM bindings
+function newTable() {
+
+}
+
+function deleteTable() {
+    
+}
+
+function newColumn() {
+    
+}
+
+function deleteColumn() {
+    
+}
+
+function newRecord() {
+    
+}
+
+function deleteRecord() {
+    
+}
+
+function updateRecord() {
+
+}
+//#endregion
+
 document.onload = function () {
     init();
 }
