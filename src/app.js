@@ -45,7 +45,7 @@ io.on('connection', function(socket) {
             tableNames.push(res.rows[i][propName]);
         }
 
-        Logger.log(`Tables: ${tableNames}`, Logger.types.general);
+        //Logger.log(`Tables: ${tableNames}`, Logger.types.general);
     });
 });
 
@@ -79,11 +79,11 @@ function queryDB (query, connection, callback) {
         };
 
         if (err != null) {
-            Logger.log(`QUERY: ${query} failed - ${err}`, Logger.types.dbEvent);
+            Logger.log(`QUERY: '${query}' failed - ${err}`, Logger.types.dbEvent);
         }
 
         else {
-            Logger.log(`QUERY: ${query} succeeded`, Logger.types.dbEvent)
+            Logger.log(`QUERY: '${query}' succeeded`, Logger.types.dbEvent)
         }
 
         if (callback != null) {
