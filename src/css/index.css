@@ -1,3 +1,63 @@
 .body {
-    text-align: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.top-button-row {
+    border: 5px solid red;
+    width: 100vw;
+    height: 5%;
+    top: 0;
+    left: 0;
+}
+
+.top-buttons {
+    height: 100%;
+    margin-right: 20px;
+}
+
+.side-col-info {
+    border: 5px solid blue;
+    position: fixed;
+    right: 0;
+    width: 15%;
+    height: 95%;
+}
+
+.table {
+    border: 5px solid yellow;
+    position: fixed;
+    display: block;
+    left: 0;
+    width: 84%;
+    height: 95%;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    overflow: scroll;
+    margin: 10px;
+}
+
+.cell-textarea {
+    height: 100%;
+    width: 100%;
+    resize: none;
+    text-align: left;
+    /* padding-left: 2px; */
+    border: none;
+}
+
+th, tr, td {
+    border: 3px solid black;
+    height: 50px;
+    min-width: 200px;
+}
+
+tr {
+    border: 1px solid black;
+}
+
+td {
+    border: 1px solid black;
+    height: 30px;
 }
