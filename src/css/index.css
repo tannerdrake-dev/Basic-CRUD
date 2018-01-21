@@ -63,21 +63,45 @@ td {
     height: 30px;
 }
 
+.list-header-table {
+    position: relative;
+    left: 33%;
+    font-size: 2em;
+}
+
+.list-header-column {
+    position: relative;
+    left: 33%;
+    top: 90px;
+    font-size: 2em;
+}
+
 .table-list {
-    height: 40%;
+    position: relative;
+    height: 30%;
     width: 100%;
     overflow-y: scroll;
 }
 
 .column-list {
-    height: 40%;
+    position: relative;
+    top: 90px;
+    height: 30%;
     width: 100%;
     overflow-y: scroll;
-    margin-top: 50px;
 }
 
-.side-list-buttons {
+.side-list-button-table {
+    position: relative;
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 35px;
+}
+
+.side-list-button-column {
+    position: relative;
+    top: 90px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 30px;
 }
