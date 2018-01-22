@@ -61,6 +61,10 @@ io.on('connection', function(socket) {
     socket.on('GetAllRecordsByTable', function() {
     
     });
+
+    socket.on('disconnect', function() {
+        Logger.log(`${socket.request.connection.remoteAddress} disconnected`, Logger.types.general);
+    });
 });
 
 //#endregion
@@ -97,7 +101,7 @@ function queryDB (query, connection, callback) {
         }
 
         else {
-            Logger.log(`QUERY: '${query}' succeeded`, Logger.types.dbEvent)
+            Logger.log(`QUERY: '${query}'`, Logger.types.dbEvent)
         }
 
         if (callback != null) {
