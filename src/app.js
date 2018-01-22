@@ -37,7 +37,9 @@ server.listen(port, function() {
 
 io.on('connection', function(socket) {
     Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
+});
 
+io.on('GetTables', function(socket) {
     queryDB('show tables', dbConnection, function (res) {
         let propName = `Tables_in_${DB_NAME}`;
 
@@ -48,11 +50,9 @@ io.on('connection', function(socket) {
         }
 
         //Logger.log(`Tables: ${tableNames}`, Logger.types.general);
+
+        socket.emit('GetTables', cache.tables);
     });
-});
-
-io.on('GetTables', function(socket) {
-
 });
 
 io.on('GetAllRecordsByTable', function(socket) {

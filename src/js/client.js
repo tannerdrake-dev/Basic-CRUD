@@ -1,6 +1,7 @@
 let Client = {};
 
 function init() {
+    Client.cache = {};
     Client.socket = io.connect();
 
     //#region Grab/Store DOM References
@@ -58,9 +59,19 @@ function init() {
         Client.domRefs.deleteColumnBtn.onclick = deleteColumn;
     }
     //#endregion
+
+    //grab tables and initially build out the grid for the first table
+    Client.socket.emit('GetTables');
 }
 
 //#region Functions
+Client.socket.on('GetTables', function (tables) {
+    //update client cache
+    Client.cache.tables = tables;
+
+    //TODO: update the side table list
+});
+
 function newTable() {
     alert('newTable');
 }
@@ -90,7 +101,7 @@ function updateRecord() {
 }
 
 function generateGrid() {
-    
+
 }
 //#endregion
 
