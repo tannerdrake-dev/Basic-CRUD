@@ -13,7 +13,8 @@ let app = express(),
     server = http.Server(app),
     io = socket.listen(server),
     port = process.env.PORT || 8081,
-    DB_NAME = 'crud_demo';
+    DB_NAME = process.env.DB || 'crud_demo',
+    cache = {};
 //#endregion
 
 //#region Serve Client Files
@@ -38,15 +39,24 @@ io.on('connection', function(socket) {
     Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
 
     queryDB('show tables', dbConnection, function (res) {
-        let tableNames = [],
-            propName = `Tables_in_${DB_NAME}`;
+        let propName = `Tables_in_${DB_NAME}`;
+
+        cache.tables = new Map();
 
         for (let i = 0, j = res.rows.length; i < j; i++) {
-            tableNames.push(res.rows[i][propName]);
+            cache.tables.set(res.rows[i][propName], []);
         }
 
         //Logger.log(`Tables: ${tableNames}`, Logger.types.general);
     });
+});
+
+io.on('GetTables', function(socket) {
+
+});
+
+io.on('GetAllRecordsByTable', function(socket) {
+
 });
 
 //#endregion
