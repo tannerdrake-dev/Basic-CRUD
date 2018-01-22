@@ -37,26 +37,30 @@ server.listen(port, function() {
 
 io.on('connection', function(socket) {
     Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
-});
 
-io.on('GetTables', function(socket) {
-    queryDB('show tables', dbConnection, function (res) {
-        let propName = `Tables_in_${DB_NAME}`;
-
-        cache.tables = new Map();
-
-        for (let i = 0, j = res.rows.length; i < j; i++) {
-            cache.tables.set(res.rows[i][propName], []);
+    socket.on('GetTables', function() {
+        function sendTablesToClient (res) {
+            let propName = `Tables_in_${DB_NAME}`,
+                tableNames = [];
+            cache.tables = new Map();
+    
+            for (let i = 0, j = res.rows.length; i < j; i++) {
+                let tableName = res.rows[i][propName];
+                cache.tables.set(tableName, []);
+                tableNames.push(tableName);
+            }
+    
+            //Logger.log(`Tables: ${tableNames}`, Logger.types.general);
+    
+            socket.emit('GetTableMap', tableNames);
         }
-
-        //Logger.log(`Tables: ${tableNames}`, Logger.types.general);
-
-        socket.emit('GetTables', cache.tables);
+    
+        queryDB('show tables', dbConnection, sendTablesToClient);
     });
-});
-
-io.on('GetAllRecordsByTable', function(socket) {
-
+    
+    socket.on('GetAllRecordsByTable', function() {
+    
+    });
 });
 
 //#endregion

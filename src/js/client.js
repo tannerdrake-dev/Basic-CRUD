@@ -62,15 +62,34 @@ function init() {
 
     //grab tables and initially build out the grid for the first table
     Client.socket.emit('GetTables');
+
+    //#region Socket Events
+    Client.socket.on('GetTableMap', function (tables) {
+        //create client table cache
+        Client.cache.tables = new Map();
+
+        //update the side table list
+        while (Client.domRefs.tableList.hasChildNodes()) {
+            Client.domRefs.tableList.removeChild(Client.domRefs.tableList.childNodes[0]);
+        }        
+
+        for (let i = 0, j = tables.length; i < j; i++) {
+            let tableName = tables[i];
+            Client.cache.tables.set(tableName, []);
+
+            let tableOption = document.createElement('option');
+            tableOption.value = tableOption.innerHTML = tableName;
+
+            Client.domRefs.tableList.appendChild(tableOption);
+        }
+    });
+    //#endregion
 }
 
 //#region Functions
-Client.socket.on('GetTables', function (tables) {
-    //update client cache
-    Client.cache.tables = tables;
+function tableSelected() {
 
-    //TODO: update the side table list
-});
+}
 
 function newTable() {
     alert('newTable');
