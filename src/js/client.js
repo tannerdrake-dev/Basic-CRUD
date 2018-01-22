@@ -82,6 +82,11 @@ function init() {
 
             Client.domRefs.tableList.appendChild(tableOption);
         }
+
+        if (tables.length > 0) {
+            //if there are tables then we initially select the first table
+            Client.domRefs.tableList.selectedIndex = 0;
+        }
     });
     //#endregion
 }
