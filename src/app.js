@@ -58,7 +58,7 @@ io.on('connection', function(socket) {
         queryDB('show tables', dbConnection, sendTablesToClient);
     });
     
-    socket.on('GetAllRecordsByTable', function() {
+    socket.on('GetAllForTable', function(table) {
     
     });
 

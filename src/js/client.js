@@ -94,6 +94,10 @@ function init() {
             tableSelected();
         }
     });
+
+    socket.on('GetAllForTable', function (data) {
+
+    });
     //#endregion
 }
 
@@ -106,7 +110,7 @@ function tableSelected() {
     }
 
     //a new index was selected so update the previous index to our current one
-    Client.prevSelectedTableIndex = currIndex;    
+    Client.prevSelectedTableIndex = currIndex;
 }
 
 function columnSelected() {
