@@ -3,6 +3,8 @@ let Client = {};
 function init() {
     Client.cache = {};
     Client.socket = io.connect();
+    Client.prevSelectedTableIndex = -1;
+    Client.prevSelectedColumnIndex = -1;
 
     //#region Grab/Store DOM References
     Client.domRefs = {};
@@ -27,6 +29,7 @@ function init() {
     let tableList = document.getElementById('table-list');
     if (tableList != null) {
         Client.domRefs.tableList = tableList;
+        Client.domRefs.tableList.onchanged = tableSelected;
     }
 
     let newTableBtn = document.getElementById('new-table-button');
@@ -44,7 +47,7 @@ function init() {
     let columnList = document.getElementById('column-list');
     if (columnList != null) {
         Client.domRefs.columnList = columnList;
-        Client.domRefs.newRecordBtn.onclick = newRecord;
+        Client.domRefs.columnList.onchanged = columnSelected;
     }
 
     let newColumnBtn = document.getElementById('new-column-button');
@@ -86,6 +89,9 @@ function init() {
         if (tables.length > 0) {
             //if there are tables then we initially select the first table
             Client.domRefs.tableList.selectedIndex = 0;
+
+            //call tableSelected to trigger record and column list building/updating
+            tableSelected();
         }
     });
     //#endregion
@@ -93,7 +99,25 @@ function init() {
 
 //#region Functions
 function tableSelected() {
+    let currIndex = Client.domRefs.tableList.selectedIndex;
+    if (currIndex == Client.prevSelectedTableIndex) {
+        //nothing changed don't continue on
+        return;
+    }
 
+    //a new index was selected so update the previous index to our current one
+    Client.prevSelectedTableIndex = currIndex;    
+}
+
+function columnSelected() {
+    let currIndex = Client.domRefs.columnList.selectedIndex;
+    if (currIndex == Client.prevSelectedColumnIndex) {
+        //nothing changed don't continue on
+        return;
+    }
+
+    //a new index was selected so update the previous index to our current one
+    Client.prevSelectedColumnIndex = currIndex;
 }
 
 function newTable() {
