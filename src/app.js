@@ -50,8 +50,6 @@ io.on('connection', function(socket) {
                 tableNames.push(tableName);
             }
     
-            //Logger.log(`Tables: ${tableNames}`, Logger.types.general);
-    
             socket.emit('GetTableMap', tableNames);
         }
     

@@ -111,6 +111,9 @@ function tableSelected() {
 
     //a new index was selected so update the previous index to our current one
     Client.prevSelectedTableIndex = currIndex;
+
+    //make service request for all
+    Client.socket.emit('GetAllForTable', table);
 }
 
 function columnSelected() {
