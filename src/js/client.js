@@ -68,6 +68,11 @@ function init() {
 
     //#region Socket Events
     Client.socket.on('GetTableMap', function (tables) {
+        if (typeof tables === 'String') {
+            //error
+            return;
+        }
+
         //create client table cache
         Client.cache.tables = new Map();
 
@@ -95,8 +100,11 @@ function init() {
         }
     });
 
-    socket.on('GetAllForTable', function (data) {
-
+    Client.socket.on('GetAllForTable', function (data) {
+        if (typeof data === 'String') {
+            //error
+            return;
+        }
     });
     //#endregion
 }
@@ -111,6 +119,8 @@ function tableSelected() {
 
     //a new index was selected so update the previous index to our current one
     Client.prevSelectedTableIndex = currIndex;
+
+    let table = Client.domRefs.tableList.childNodes[currIndex].value;
 
     //make service request for all
     Client.socket.emit('GetAllForTable', table);

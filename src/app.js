@@ -24,10 +24,6 @@ app.use('/js', express.static(__dirname + '/js'));
 app.get('/', function(req, res){ 
     res.sendFile(__dirname+'/index.html'); 
 }); 
-
-app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html');
-});
 //#endregion
 
 //#region Server Start/Events
@@ -41,13 +37,22 @@ io.on('connection', function(socket) {
     socket.on('GetTables', function() {
         function sendTablesToClient (res) {
             let propName = `Tables_in_${DB_NAME}`,
-                tableNames = [];
+                tableNames = [],
+                data;
             cache.tables = new Map();
+
+            if (res.error != null) {
+                data = res.error;
+            }
+
+            else {
+                for (let i = 0, j = res.rows.length; i < j; i++) {
+                    let tableName = res.rows[i][propName];
+                    cache.tables.set(tableName, []);
+                    tableNames.push(tableName);
+                }
     
-            for (let i = 0, j = res.rows.length; i < j; i++) {
-                let tableName = res.rows[i][propName];
-                cache.tables.set(tableName, []);
-                tableNames.push(tableName);
+                data = tableNames;
             }
     
             socket.emit('GetTableMap', tableNames);
@@ -57,7 +62,11 @@ io.on('connection', function(socket) {
     });
     
     socket.on('GetAllForTable', function(table) {
-    
+        function infoToClient (res) {
+            socket.emit('GetAllForTable', res.rows);
+        }
+
+        queryDB(`select * from ${table}`, dbConnection, infoToClient);
     });
 
     socket.on('disconnect', function() {
