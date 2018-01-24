@@ -46,7 +46,7 @@ io.on('connection', function(socket) {
                 tableNames.push(tableName);
             }
     
-            socket.emit('GetTableMap', {err: res.error, data: tableNames});
+            socket.emit('GetTableMap', {err: res.error, tables: tableNames});
         }
     
         queryDB('show tables', dbConnection, sendTablesToClient);
@@ -54,7 +54,7 @@ io.on('connection', function(socket) {
     
     socket.on('GetAllForTable', function(table) {
         function infoToClient (res) {
-            socket.emit('GetAllForTable', {err: res.error, data: res.rows});
+            socket.emit('GetAllForTable', res);
         }
 
         queryDB(`select * from ${table}`, dbConnection, infoToClient);
