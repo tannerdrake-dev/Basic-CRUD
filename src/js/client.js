@@ -29,7 +29,7 @@ function init() {
     let tableList = document.getElementById('table-list');
     if (tableList != null) {
         Client.domRefs.tableList = tableList;
-        Client.domRefs.tableList.onchanged = tableSelected;
+        Client.domRefs.tableList.onchange = tableSelected;
     }
 
     let newTableBtn = document.getElementById('new-table-button');
@@ -47,7 +47,7 @@ function init() {
     let columnList = document.getElementById('column-list');
     if (columnList != null) {
         Client.domRefs.columnList = columnList;
-        Client.domRefs.columnList.onchanged = columnSelected;
+        Client.domRefs.columnList.onchange = columnSelected;
     }
 
     let newColumnBtn = document.getElementById('new-column-button');
@@ -67,12 +67,14 @@ function init() {
     Client.socket.emit('GetTables');
 
     //#region Socket Events
-    Client.socket.on('GetTableMap', function (tables) {
+    Client.socket.on('GetTableMap', function (data) {
         if (data.error != null) {
             //error
             console.log(`GetTableMap error: ${data.error}`);
             return;
         }
+
+        let tables = data.tables;
 
         //create client table cache
         Client.cache.tables = new Map();
@@ -80,7 +82,7 @@ function init() {
         //update the side table list
         while (Client.domRefs.tableList.hasChildNodes()) {
             Client.domRefs.tableList.removeChild(Client.domRefs.tableList.childNodes[0]);
-        }        
+        }
 
         for (let i = 0, j = tables.length; i < j; i++) {
             let tableName = tables[i];
@@ -107,6 +109,8 @@ function init() {
             console.log(`GetAllForTable error: ${data.error}`);
             return;
         }
+
+        generateGrid(data.rows, data.fields);
     });
     //#endregion
 }
@@ -167,8 +171,55 @@ function updateRecord() {
     alert('updateRecord');
 }
 
-function generateGrid() {
+function generateGrid(rows, fields) {
+    if (rows == null || rows == 'undefined') {
+        rows = [];
+    }
 
+    //remove all table children for rebuilding
+    while (Client.domRefs.table.hasChildNodes()) {
+        Client.domRefs.table.removeChild(Client.domRefs.table.childNodes[0]);
+    }
+
+    let spanGroup = document.createElement('colgroup'),
+        keys = [],
+        headerRow = document.createElement('tr');
+
+    for (let s = 0, t = fields.length; s < t; s++) {
+        //key references to column header names
+        keys.push(fields[s].name);
+
+        //create column header dom elements
+        let col = document.createElement('th');
+        col.innerHTML = fields[s].name;
+        headerRow.appendChild(col);
+    }
+
+    spanGroup.span = keys.length;;
+
+    Client.domRefs.table.appendChild(spanGroup);
+    Client.domRefs.table.appendChild(headerRow);
+
+    for (let i = 0, j = rows.length; i < j; i++) {
+        let currRow = rows[i],
+            dataRow = document.createElement('tr');
+
+        for (let k = 0, l = keys.length; k < l; k++) {
+            let key = keys[k],
+                currCol = currRow[key];
+
+            let tableData = document.createElement('td'),
+                textArea = document.createElement('textarea');
+
+            textArea.className = 'cell-textarea';
+            textArea.value = currCol;
+
+            tableData.appendChild(textArea);
+            dataRow.appendChild(tableData);
+        }
+        
+        Client.domRefs.table.appendChild(dataRow);
+    }
 }
 //#endregion
 
