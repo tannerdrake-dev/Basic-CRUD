@@ -37,25 +37,16 @@ io.on('connection', function(socket) {
     socket.on('GetTables', function() {
         function sendTablesToClient (res) {
             let propName = `Tables_in_${DB_NAME}`,
-                tableNames = [],
-                data;
+                tableNames = [];
             cache.tables = new Map();
 
-            if (res.error != null) {
-                data = res.error;
-            }
-
-            else {
-                for (let i = 0, j = res.rows.length; i < j; i++) {
-                    let tableName = res.rows[i][propName];
-                    cache.tables.set(tableName, []);
-                    tableNames.push(tableName);
-                }
-    
-                data = tableNames;
+            for (let i = 0, j = res.rows.length; i < j; i++) {
+                let tableName = res.rows[i][propName];
+                cache.tables.set(tableName, []);
+                tableNames.push(tableName);
             }
     
-            socket.emit('GetTableMap', tableNames);
+            socket.emit('GetTableMap', {err: res.error, data: tableNames});
         }
     
         queryDB('show tables', dbConnection, sendTablesToClient);
@@ -63,7 +54,7 @@ io.on('connection', function(socket) {
     
     socket.on('GetAllForTable', function(table) {
         function infoToClient (res) {
-            socket.emit('GetAllForTable', res.rows);
+            socket.emit('GetAllForTable', {err: res.error, data: res.rows});
         }
 
         queryDB(`select * from ${table}`, dbConnection, infoToClient);

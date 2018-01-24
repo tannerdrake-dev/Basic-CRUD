@@ -68,8 +68,9 @@ function init() {
 
     //#region Socket Events
     Client.socket.on('GetTableMap', function (tables) {
-        if (typeof tables === 'String') {
+        if (data.error != null) {
             //error
+            console.log(`GetTableMap error: ${data.error}`);
             return;
         }
 
@@ -101,8 +102,9 @@ function init() {
     });
 
     Client.socket.on('GetAllForTable', function (data) {
-        if (typeof data === 'String') {
+        if (data.error != null) {
             //error
+            console.log(`GetAllForTable error: ${data.error}`);
             return;
         }
     });
