@@ -63,9 +63,6 @@ function init() {
     }
     //#endregion
 
-    //grab tables and initially build out the grid for the first table
-    Client.socket.emit('GetTables');
-
     //#region Socket Events
     Client.socket.on('GetTableMap', function (data) {
         if (data.error != null) {
@@ -112,7 +109,18 @@ function init() {
 
         generateGrid(data.rows, data.fields);
     });
+
+    Client.socket.on('GetNewRecord', function (data) {
+        if (data.error != null) {
+            //error
+            console.log(`GetNewRecord error: ${data.error}`);
+            return;
+        }
+    });
     //#endregion
+
+    //grab tables and initially build out the grid for the first table
+    Client.socket.emit('GetTables');
 }
 
 //#region Functions
@@ -160,7 +168,11 @@ function deleteColumn() {
 }
 
 function newRecord() {
-    alert('newRecord');
+    let currIndex = Client.domRefs.tableList.selectedIndex,
+        table = Client.domRefs.tableList.childNodes[currIndex].value;
+        
+    //tell server to create a new record which will return a new record with an ID
+    Client.socket.emit('NewRecord', table);
 }
 
 function deleteRecord() {

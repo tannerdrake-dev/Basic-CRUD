@@ -34,6 +34,10 @@ server.listen(port, function() {
 io.on('connection', function(socket) {
     Logger.log(`${socket.request.connection.remoteAddress} connected`, Logger.types.general);
 
+    socket.on('disconnect', function() {
+        Logger.log(`${socket.request.connection.remoteAddress} disconnected`, Logger.types.general);
+    });
+
     socket.on('GetTables', function() {
         function sendTablesToClient (res) {
             let propName = `Tables_in_${DB_NAME}`,
@@ -60,11 +64,14 @@ io.on('connection', function(socket) {
         queryDB(`select * from ${table}`, dbConnection, infoToClient);
     });
 
-    socket.on('disconnect', function() {
-        Logger.log(`${socket.request.connection.remoteAddress} disconnected`, Logger.types.general);
+    socket.on('NewRecord', function(table) {
+        function infoToClient (res) {
+            socket.emit('GetNewRecord', res);
+        }
+
+        queryDB(`insert into ${table}() values()`, dbConnection, infoToClient);
     });
 });
-
 //#endregion
 
 //#region MySQL DB connection
