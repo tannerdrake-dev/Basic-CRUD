@@ -22,6 +22,12 @@ function init() {
         Client.domRefs.deleteRecordBtn.onclick = deleteRecord;
     }
 
+    let saveRecordBtn = document.getElementById('save-record-button');
+    if (saveRecordBtn != null) {
+        Client.domRefs.saveRecordBtn = saveRecordBtn;
+        Client.domRefs.saveRecordBtn.onclick = saveRecord;
+    }
+
     let tableRef = document.getElementById('table-dom');
     if (tableRef != null) {
         Client.domRefs.table = tableRef;
@@ -183,8 +189,8 @@ function deleteRecord() {
     alert('deleteRecord');
 }
 
-function updateRecord() {
-    alert('updateRecord');
+function saveRecord() {
+    alert('saveRecord');
 }
 
 function buildColumnList(fields) {
