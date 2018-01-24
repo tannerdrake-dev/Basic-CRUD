@@ -5,6 +5,7 @@ function init() {
     Client.socket = io.connect();
     Client.prevSelectedTableIndex = -1;
     Client.prevSelectedColumnIndex = -1;
+    Client.selectedTable = null;
 
     //#region Grab/Store DOM References
     Client.domRefs = {};
@@ -108,6 +109,7 @@ function init() {
         }
 
         generateGrid(data.rows, data.fields);
+        buildColumnList(data.fields);
     });
 
     Client.socket.on('GetNewRecord', function (data) {
@@ -116,6 +118,9 @@ function init() {
             console.log(`GetNewRecord error: ${data.error}`);
             return;
         }
+
+        //make service request for all
+        Client.socket.emit('GetAllForTable', Client.selectedTable);
     });
     //#endregion
 
@@ -125,7 +130,11 @@ function init() {
 
 //#region Functions
 function tableSelected() {
-    let currIndex = Client.domRefs.tableList.selectedIndex;
+    let currIndex = Client.domRefs.tableList.selectedIndex,
+        table = Client.domRefs.tableList.childNodes[currIndex].value;
+
+    Client.selectedTable = table;
+
     if (currIndex == Client.prevSelectedTableIndex) {
         //nothing changed don't continue on
         return;
@@ -133,8 +142,6 @@ function tableSelected() {
 
     //a new index was selected so update the previous index to our current one
     Client.prevSelectedTableIndex = currIndex;
-
-    let table = Client.domRefs.tableList.childNodes[currIndex].value;
 
     //make service request for all
     Client.socket.emit('GetAllForTable', table);
@@ -168,11 +175,8 @@ function deleteColumn() {
 }
 
 function newRecord() {
-    let currIndex = Client.domRefs.tableList.selectedIndex,
-        table = Client.domRefs.tableList.childNodes[currIndex].value;
-        
     //tell server to create a new record which will return a new record with an ID
-    Client.socket.emit('NewRecord', table);
+    Client.socket.emit('NewRecord', Client.selectedTable);
 }
 
 function deleteRecord() {
@@ -181,6 +185,20 @@ function deleteRecord() {
 
 function updateRecord() {
     alert('updateRecord');
+}
+
+function buildColumnList(fields) {
+    //remove all column options children for rebuilding
+    while (Client.domRefs.columnList.hasChildNodes()) {
+        Client.domRefs.columnList.removeChild(Client.domRefs.columnList.childNodes[0]);
+    }
+
+    for (let i = 0, j = fields.length; i < j; i++) {
+        let columnOption = document.createElement('option');
+        columnOption.value = columnOption.innerHTML = fields[i].name;
+
+        Client.domRefs.columnList.appendChild(columnOption);
+    }
 }
 
 function generateGrid(rows, fields) {
