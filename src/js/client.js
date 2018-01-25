@@ -6,6 +6,7 @@ function init() {
     Client.prevSelectedTableIndex = -1;
     Client.prevSelectedColumnIndex = -1;
     Client.selectedTable = null;
+    Client.dirtyValues = [];
 
     //#region Grab/Store DOM References
     Client.domRefs = {};
@@ -128,6 +129,22 @@ function init() {
         //make service request for all
         Client.socket.emit('GetAllForTable', Client.selectedTable);
     });
+
+    Client.socket.on('UpdateRecordConfirmation', function(data) {
+        if (data.allUpdated === false || (data.error != null && data.error != "")) {
+            //error
+            console.log(`UpdateRecordConfirmation error: ${data.error}`);
+            return;
+        }
+
+        //go through all text areas and set their styling back to the normal "saved" style with no border
+        //TODO: fix this, this function is returning an empty HTML Collection
+        let unsavedCells = document.getElementsByClassName('unsaved-cell-texarea');
+        for (let i = 0, j = unsavedCells.length; i < j; i++) {
+            let currUnsavedCell = unsavedCells[i];
+            currUnsavedCell.className = 'cell-textarea';
+        }
+    });
     //#endregion
 
     //grab tables and initially build out the grid for the first table
@@ -169,6 +186,7 @@ function newTable() {
 }
 
 function deleteTable() {
+    //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteTable');
 }
 
@@ -177,6 +195,7 @@ function newColumn() {
 }
 
 function deleteColumn() {
+    //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteColumn');
 }
 
@@ -186,11 +205,35 @@ function newRecord() {
 }
 
 function deleteRecord() {
+    //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteRecord');
 }
 
+function cellUpdated() {
+    let currValue = this.value,
+        dirtyCell = {};
+
+    if (currValue == this.modelData.prevValue) {
+        //data hasn't changed, do nothing
+        return;
+    }
+
+    //set the cell to "unsaved" by giving it a red border
+    this.className = 'unsaved-cell-textarea';
+
+    //update model data to reflect new value
+    this.modelData.prevValue = currValue;
+
+    //build dirty cell object that we store on the client until saved
+    dirtyCell.column = this.modelData.column;
+    dirtyCell.id = this.modelData.recordID;
+    dirtyCell.value = currValue;
+
+    Client.dirtyValues.push(dirtyCell);
+}
+
 function saveRecord() {
-    alert('saveRecord');
+    Client.socket.emit('UpdateRecords', {table: Client.selectedTable, records: Client.dirtyValues});
 }
 
 function buildColumnList(fields) {
@@ -238,7 +281,8 @@ function generateGrid(rows, fields) {
 
     for (let i = 0, j = rows.length; i < j; i++) {
         let currRow = rows[i],
-            dataRow = document.createElement('tr');
+            dataRow = document.createElement('tr'),
+            id = currRow['id'];
 
         for (let k = 0, l = keys.length; k < l; k++) {
             let key = keys[k],
@@ -247,8 +291,16 @@ function generateGrid(rows, fields) {
             let tableData = document.createElement('td'),
                 textArea = document.createElement('textarea');
 
+            textArea.onblur = cellUpdated;
+
             textArea.className = 'cell-textarea';
             textArea.value = currCol;
+
+            textArea.modelData = {
+                column: key,
+                prevValue: currCol,
+                recordID: id
+            }
 
             tableData.appendChild(textArea);
             dataRow.appendChild(tableData);

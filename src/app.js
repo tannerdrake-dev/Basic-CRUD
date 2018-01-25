@@ -71,6 +71,35 @@ io.on('connection', function(socket) {
 
         queryDB(`insert into ${table}() values()`, dbConnection, infoToClient);
     });
+
+    socket.on('UpdateRecords', function(data) {
+        let table = data.table,
+            queriesCompleted = 0,
+            finalRes = true,
+            records = data.records,
+            error = "";
+
+        function infoToClient (res) {
+            //increment queriesCompleted
+            queriesCompleted += 1;
+
+            //check each record upate for success, if any one returns an error then we return false to indicate a failure
+            if (finalRes === true && res.error != null) {
+                finalRes = false;
+                error += res.error + "\n";
+            }
+
+            if (queriesCompleted === records.length) {
+                //we have finished all record updates, tell the client
+                socket.emit('UpdateRecordConfirmation', {error: error, allUpdated: finalRes});
+            }
+        }
+
+        for (let i = 0, j = records.length; i < j; i++) {
+            let currData = records[i];
+            queryDB(`update ${table} set ${currData.column}='${currData.value}' where id=${currData.id}`, dbConnection, infoToClient);
+        }        
+    });
 });
 //#endregion
 

@@ -51,8 +51,15 @@
     width: 100%;
     resize: none;
     text-align: left;
-    /* padding-left: 2px; */
     border: none;
+}
+
+.unsaved-cell-textarea {
+    height: 100%;
+    width: 100%;
+    resize: none;
+    text-align: left;
+    border: 2px solid red;
 }
 
 th, tr, td {
