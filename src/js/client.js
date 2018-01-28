@@ -296,6 +296,11 @@ function generateGrid(rows, fields) {
             textArea.className = 'cell-textarea';
             textArea.value = currCol;
 
+            if (k === 0) {
+                //record id field will always be disabled
+                textArea.disabled = true;
+            }
+
             textArea.modelData = {
                 column: key,
                 prevValue: currCol,
