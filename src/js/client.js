@@ -139,10 +139,9 @@ function init() {
         }
 
         //go through all text areas and set their styling back to the normal "saved" style with no border
-        //TODO: fix this, this function is returning an empty HTML Collection
-        let unsavedCells = document.getElementsByClassName('unsaved-cell-texarea');
-        for (let i = 0, j = unsavedCells.length; i < j; i++) {
-            let currUnsavedCell = unsavedCells[i];
+        let allTextAreas = document.getElementsByTagName('textarea');
+        for (let i = 0, j = allTextAreas.length; i < j; i++) {
+            let currUnsavedCell = allTextAreas[i];
             currUnsavedCell.className = 'cell-textarea';
         }
     });
