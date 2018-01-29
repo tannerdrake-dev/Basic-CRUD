@@ -312,7 +312,7 @@ function generateGrid(rows, fields) {
 
             textArea.modelData = {
                 column: key,
-                prevValue: currCol,
+                prevValue: currCol == null ? "" : currCol,
                 recordID: id
             }
 
