@@ -74,7 +74,7 @@ io.on('connection', function(socket) {
 
     socket.on('DeleteRecord', function(rowData) {
         let queriesFinished = 0,
-            numQueries = rowData.recordIDs.length - 1;
+            numQueries = rowData.recordIDs.length;
 
         function infoToClient (res) {
             queriesFinished += 1;
@@ -95,7 +95,7 @@ io.on('connection', function(socket) {
         }
 
         for (let i = 0, j = rowData.recordIDs.length; i < j; i++) {
-            queryDB(`delete from ${rowData.table} where ${recordIDQuery} \`id\`=${rowData.recordIDs[i]}`, dbConnection, infoToClient);
+            queryDB(`delete from ${rowData.table} where \`id\`=${rowData.recordIDs[i]}`, dbConnection, infoToClient);
         }
     });
 
