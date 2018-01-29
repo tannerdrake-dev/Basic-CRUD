@@ -6,6 +6,7 @@ function init() {
     Client.prevSelectedTableIndex = -1;
     Client.prevSelectedColumnIndex = -1;
     Client.selectedTable = null;
+    Client.selectedRows = [];
     Client.dirtyValues = [];
 
     //#region Grab/Store DOM References
@@ -215,7 +216,7 @@ function newRecord() {
 function deleteRecord() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteRecord');
-    Client.socket.emit('DeleteRecord', { table: Client.selectedTable, recordIDs: [] });
+    Client.socket.emit('DeleteRecord', { table: Client.selectedTable, recordIDs: Client.selectedRows });
 }
 
 function cellUpdated() {
@@ -239,6 +240,23 @@ function cellUpdated() {
     dirtyCell.value = currValue;
 
     Client.dirtyValues.push(dirtyCell);
+}
+
+function selectDeselectAllRows() {
+    alert(this.checked);
+}
+
+function rowSelectedDeselected() {
+    let indexOfRecordID = Client.selectedRows.indexOf(this.modelData.recordID);
+    //row selector was toggled to true, only add to selected rows if it is not already in the array
+    if (this.checked === true && indexOfRecordID === -1) {
+        Client.selectedRows.push(this.modelData.recordID);
+    }
+
+    //row selector was toggled to false, only remove from selected rows if it is in the array
+    else if (this.checked === false && indexOfRecordID > -1) {
+        Client.selectedRows.splice(indexOfRecordID, 1);
+    }
 }
 
 function saveRecord() {
@@ -270,9 +288,23 @@ function generateGrid(rows, fields) {
     }
 
     let spanGroup = document.createElement('colgroup'),
-        keys = [],
-        headerRow = document.createElement('tr');
+        headerRow = document.createElement('tr'),
+        keys = ['rowSelection'];
 
+    //create the first column which is the row selection column
+    let rowSelectionColumn = document.createElement('th'),
+        selectAllCheckbox = document.createElement('input');
+
+    //set properties of the DOM elements
+    rowSelectionColumn.innerHTML = 'Select/Deselect All';
+    selectAllCheckbox.id = 'select-all-rows';
+    selectAllCheckbox.type = 'checkbox';
+    selectAllCheckbox.onchange = selectDeselectAllRows;
+
+    //add checkbox to the column DOM, then add column to header row
+    rowSelectionColumn.appendChild(selectAllCheckbox);
+    headerRow.appendChild(rowSelectionColumn);
+    
     for (let s = 0, t = fields.length; s < t; s++) {
         //key references to column header names
         keys.push(fields[s].name);
@@ -298,25 +330,40 @@ function generateGrid(rows, fields) {
                 currCol = currRow[key];
 
             let tableData = document.createElement('td'),
-                textArea = document.createElement('textarea');
-
-            textArea.onblur = cellUpdated;
-
-            textArea.className = 'cell-textarea';
-            textArea.value = currCol;
+                cellElement;
 
             if (k === 0) {
-                //record id field will always be disabled
-                textArea.disabled = true;
+                cellElement = document.createElement('input');
+                cellElement.id = `row-select-id${id}`;
+                cellElement.type = 'checkbox';
+
+                cellElement.onchange = rowSelectedDeselected;
+                cellElement.modelData = {
+                    column: key,
+                    recordID: id
+                }
             }
 
-            textArea.modelData = {
-                column: key,
-                prevValue: currCol == null ? "" : currCol,
-                recordID: id
-            }
+            else {
+                cellElement = document.createElement('textarea');
+                cellElement.onblur = cellUpdated;
 
-            tableData.appendChild(textArea);
+                cellElement.className = 'cell-textarea';
+                cellElement.value = currCol;
+
+                if (k === 1) {
+                    //record id field will always be disabled
+                    cellElement.disabled = true;
+                }
+
+                cellElement.modelData = {
+                    column: key,
+                    prevValue: currCol == null ? "" : currCol,
+                    recordID: id
+                }
+            }            
+
+            tableData.appendChild(cellElement);
             dataRow.appendChild(tableData);
         }
         
