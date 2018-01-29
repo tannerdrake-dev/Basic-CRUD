@@ -81,7 +81,7 @@ io.on('connection', function(socket) {
     
             let finalRes = {
                 error: "",
-                result = true
+                result: true
             }
 
             if (res.error != null) {
