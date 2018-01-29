@@ -145,6 +145,14 @@ function init() {
             currUnsavedCell.className = 'cell-textarea';
         }
     });
+
+    Client.socket.on('DeleteRecordConfirmation', function(data) {
+        if (data.error != null) {
+            //error
+            console.log(`DeleteRecordConfirmation error: ${data.error}`);
+            return;
+        }
+    });
     //#endregion
 
     //grab tables and initially build out the grid for the first table
@@ -207,6 +215,7 @@ function newRecord() {
 function deleteRecord() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteRecord');
+    Client.socket.emit('DeleteRecord', { table: Client.selectedTable, recordIDs: [] });
 }
 
 function cellUpdated() {

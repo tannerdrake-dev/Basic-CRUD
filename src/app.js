@@ -72,6 +72,33 @@ io.on('connection', function(socket) {
         queryDB(`insert into ${table}() values()`, dbConnection, infoToClient);
     });
 
+    socket.on('DeleteRecord', function(rowData) {
+        let queriesFinished = 0,
+            numQueries = rowData.recordIDs.length - 1;
+
+        function infoToClient (res) {
+            queriesFinished += 1;
+    
+            let finalRes = {
+                error: "",
+                result = true
+            }
+
+            if (res.error != null) {
+                finalRes.error += res.error + "\n";
+                finslRes.result = false;
+            }
+
+            if (queriesFinished === numQueries) {
+                socket.emit('DeleteRecordConfirmation', finalRes);
+            }
+        }
+
+        for (let i = 0, j = rowData.recordIDs.length; i < j; i++) {
+            queryDB(`delete from ${rowData.table} where ${recordIDQuery} \`id\`=${rowData.recordIDs[i]}`, dbConnection, infoToClient);
+        }
+    });
+
     socket.on('UpdateRecords', function(data) {
         let table = data.table,
             queriesCompleted = 0,
