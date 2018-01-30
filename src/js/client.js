@@ -231,6 +231,38 @@ function init() {
         //reset selected rows
         Client.selectedRows = [];
     });
+
+    Client.on('AddColumnConfirmation', function(data) {
+        if (data.error != null && data.error != "") {
+            //error
+            console.log(`AddColumnConfirmation error: ${data.error}`);
+            return;
+        }
+    });
+
+    Client.on('RemoveColumnConfirmation', function(data) {
+        if (data.error != null && data.error != "") {
+            //error
+            console.log(`RemoveColumnConfirmation error: ${data.error}`);
+            return;
+        }
+    });
+
+    Client.on('AddTableConfirmation', function(data) {
+        if (data.error != null && data.error != "") {
+            //error
+            console.log(`AddTableConfirmation error: ${data.error}`);
+            return;
+        }
+    });
+
+    Client.on('RemoveTableConfirmation', function(data) {
+        if (data.error != null && data.error != "") {
+            //error
+            console.log(`RemoveTableConfirmation error: ${data.error}`);
+            return;
+        }
+    });
     //#endregion
 
     //grab tables and initially build out the grid for the first table
