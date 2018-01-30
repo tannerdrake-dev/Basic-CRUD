@@ -61,7 +61,7 @@ io.on('connection', function(socket) {
             socket.emit('GetAllForTable', res);
         }
 
-        queryDB(`select * from ${table}`, dbConnection, infoToClient);
+        queryDB(`select * from \`${table}\``, dbConnection, infoToClient);
     });
 
     socket.on('NewRecord', function(table) {
@@ -69,7 +69,7 @@ io.on('connection', function(socket) {
             socket.emit('GetNewRecord', res);
         }
 
-        queryDB(`insert into ${table}() values()`, dbConnection, infoToClient);
+        queryDB(`insert into \`${table}\`() values()`, dbConnection, infoToClient);
     });
 
     socket.on('DeleteRecord', function(rowData) {
@@ -95,7 +95,7 @@ io.on('connection', function(socket) {
         }
 
         for (let i = 0, j = rowData.recordIDs.length; i < j; i++) {
-            queryDB(`delete from ${rowData.table} where \`id\`=${rowData.recordIDs[i]}`, dbConnection, infoToClient);
+            queryDB(`delete from \`${rowData.table}\` where \`id\`=${rowData.recordIDs[i]}`, dbConnection, infoToClient);
         }
     });
 
@@ -124,7 +124,7 @@ io.on('connection', function(socket) {
 
         for (let i = 0, j = records.length; i < j; i++) {
             let currData = records[i];
-            queryDB(`update ${table} set ${currData.column}='${currData.value}' where id=${currData.id}`, dbConnection, infoToClient);
+            queryDB(`update \`${table}\` set \`${currData.column}\`='${currData.value}' where \`id\`=${currData.id}`, dbConnection, infoToClient);
         }        
     });
 });
