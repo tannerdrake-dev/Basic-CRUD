@@ -50,7 +50,7 @@ function init() {
     let deleteTableBtn = document.getElementById('delete-table-button');
     if (deleteTableBtn != null) {
         Client.domRefs.deleteTableBtn = deleteTableBtn;
-        Client.domRefs.deleteTableBtn.onclick = deleteRecord;
+        Client.domRefs.deleteTableBtn.onclick = deleteTable;
     }
 
     let columnList = document.getElementById('column-list');
@@ -232,7 +232,7 @@ function init() {
         Client.selectedRows = [];
     });
 
-    Client.on('AddColumnConfirmation', function(data) {
+    Client.socket.on('AddColumnConfirmation', function(data) {
         if (data.error != null && data.error != "") {
             //error
             console.log(`AddColumnConfirmation error: ${data.error}`);
@@ -240,7 +240,7 @@ function init() {
         }
     });
 
-    Client.on('RemoveColumnConfirmation', function(data) {
+    Client.socket.on('RemoveColumnConfirmation', function(data) {
         if (data.error != null && data.error != "") {
             //error
             console.log(`RemoveColumnConfirmation error: ${data.error}`);
@@ -248,7 +248,7 @@ function init() {
         }
     });
 
-    Client.on('AddTableConfirmation', function(data) {
+    Client.socket.on('AddTableConfirmation', function(data) {
         if (data.error != null && data.error != "") {
             //error
             console.log(`AddTableConfirmation error: ${data.error}`);
@@ -256,11 +256,25 @@ function init() {
         }
     });
 
-    Client.on('RemoveTableConfirmation', function(data) {
+    Client.socket.on('RemoveTableConfirmation', function(data) {
         if (data.error != null && data.error != "") {
             //error
             console.log(`RemoveTableConfirmation error: ${data.error}`);
             return;
+        }
+
+        //no errors, remove the table from list of tables
+        let selectedTableIndex = Client.domRefs.tableList.selectedIndex,
+            newIndex = selectedTableIndex - 1;
+
+        if (selectedTableIndex > -1) {
+            Client.domRefs.tableList.removeChild(Client.domRefs.tableList.childNodes[selectedTableIndex]);
+
+            //if there are tables then we initially select the first table
+            Client.domRefs.tableList.selectedIndex = newIndex;
+
+            //call tableSelected to trigger record and column list building/updating
+            tableSelected();
         }
     });
     //#endregion
@@ -306,6 +320,12 @@ function newTable() {
 function deleteTable() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteTable');
+    let selectedTableIndex = Client.domRefs.tableList.selectedIndex,
+        tableName;
+    if (selectedTableIndex > -1) {
+        tableName = Client.domRefs.tableList.childNodes[selectedTableIndex].value;
+        Client.socket.emit('RemoveTable', { table: tableName });
+    }
 }
 
 function newColumn() {
