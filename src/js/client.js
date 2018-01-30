@@ -147,11 +147,27 @@ function init() {
     });
 
     Client.socket.on('DeleteRecordConfirmation', function(data) {
-        if (data.error != null) {
+        if (data.error != null && data.error != "") {
             //error
             console.log(`DeleteRecordConfirmation error: ${data.error}`);
             return;
         }
+
+        //go through all rows and visually remove records that were just removed server side
+        //calling array slice gives us a "cloned" array of values, not references inside an HTML collection so when we remove them the array doesn't shrink
+        let allRows = Array.prototype.slice.call(document.getElementsByTagName('tr'));
+        for (let i = 0, j = allRows.length; i < j; i++) {
+            let currRow = allRows[i],
+                rowID = null;
+
+            //check row id and if index is in selected rows then remove it
+            if (currRow.childNodes[0].childNodes[0].modelData != null && Client.selectedRows.indexOf(currRow.childNodes[0].childNodes[0].modelData.recordID) > -1) {
+                Client.domRefs.table.removeChild(currRow);
+            }
+        }
+
+        //reset selected rows
+        Client.selectedRows = [];
     });
     //#endregion
 
