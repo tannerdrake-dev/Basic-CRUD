@@ -135,7 +135,55 @@ io.on('connection', function(socket) {
         for (let i = 0, j = records.length; i < j; i++) {
             let currData = records[i];
             queryDB(`update \`${table}\` set \`${currData.column}\`='${currData.value}' where \`id\`=${currData.id}`, dbConnection, infoToClient);
-        }        
+        }
+    });
+
+    socket.on('AddColumn', function(data) {
+        let newColumnName = data.column;
+
+        function infoToClient(res) {
+            socket.emit('AddColumnConfirmation', res);
+        }
+
+        if (newColumnName != null) {
+            queryDB(``, dbConnection, infoToClient);
+        }
+    });
+
+    socket.on('RemoveColumn', function(data) {
+        let columnName = data.column;
+
+        function infoToClient(res) {
+            socket.emit('RemoveColumnConfirmation', res);
+        }
+
+        if (columnName != null) {
+            queryDB(``, dbConnection, infoToClient);
+        }
+    });
+
+    socket.on('AddTable', function(data) {
+        let newTableName = data.column;
+
+        function infoToClient(res) {
+            socket.emit('AddTableConfirmation', res);
+        }
+
+        if (newColumnName != null) {
+            queryDB(``, dbConnection, infoToClient);
+        }
+    });
+
+    socket.on('RemoveTable', function(data) {
+        let newColumnName = data.column;
+
+        function infoToClient(res) {
+            socket.emit('RemoveTableConfirmation', res);
+        }
+
+        if (newColumnName != null) {
+            queryDB(``, dbConnection, infoToClient);
+        }
     });
 });
 //#endregion
