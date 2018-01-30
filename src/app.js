@@ -139,26 +139,28 @@ io.on('connection', function(socket) {
     });
 
     socket.on('AddColumn', function(data) {
-        let newColumnName = data.column;
+        let newColumnName = data.column,
+            table = data.table;
 
         function infoToClient(res) {
             socket.emit('AddColumnConfirmation', res);
         }
 
         if (newColumnName != null) {
-            queryDB(``, dbConnection, infoToClient);
+            queryDB(`alter table \`${table}\` add column \`${newColumnName}\` varchar(255)`, dbConnection, infoToClient);
         }
     });
 
     socket.on('RemoveColumn', function(data) {
-        let columnName = data.column;
+        let columnName = data.column,
+            table = data.table;
 
         function infoToClient(res) {
             socket.emit('RemoveColumnConfirmation', res);
         }
 
         if (columnName != null) {
-            queryDB(``, dbConnection, infoToClient);
+            queryDB(`alter table \`${table}\` drop column \`${newColumnName}\``, dbConnection, infoToClient);
         }
     });
 
