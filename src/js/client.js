@@ -217,6 +217,17 @@ function init() {
             }
         }
 
+        //unselect any checkboxes of records that are still left
+        let allInputs = Array.prototype.slice.call(document.getElementsByTagName('input'));
+        for (let i = 0, j = allInputs.length; i < j; i++) {
+            let currInput = allInputs[i];
+
+            //check row id and if index is in selected rows then remove it
+            if (currInput.type === 'checkbox' && currInput.checked === true) {
+                currInput.checked = false;
+            }
+        }
+
         //reset selected rows
         Client.selectedRows = [];
     });
@@ -320,7 +331,7 @@ function selectDeselectAllRows() {
             cell = currRow.childNodes[0].childNodes[0];
 
         //check row id and if index is in selected rows then remove it
-        if (checkedVal === true && cell.modelData != null && Client.selectedRows.indexOf(cell.modelData.recordID) > -1) {
+        if (checkedVal === true && cell.modelData != null && Client.selectedRows.indexOf(cell.modelData.recordID) === -1) {
             Client.selectedRows.push(cell.modelData.recordID);
         }
 
