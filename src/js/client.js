@@ -309,7 +309,26 @@ function cellUpdated() {
 }
 
 function selectDeselectAllRows() {
-    alert(this.checked);
+    //whether selecting or deselecting all rows clear our the selected row array
+    Client.selectedRows = [];
+
+    //if selecting all rows then iterate through and add all record id's to the selected row array
+    let allRows = Array.prototype.slice.call(document.getElementsByTagName('tr')),
+        checkedVal = this.checked;
+    for (let i = 0, j = allRows.length; i < j; i++) {
+        let currRow = allRows[i],
+            cell = currRow.childNodes[0].childNodes[0];
+
+        //check row id and if index is in selected rows then remove it
+        if (checkedVal === true && cell.modelData != null && Client.selectedRows.indexOf(cell.modelData.recordID) > -1) {
+            Client.selectedRows.push(cell.modelData.recordID);
+        }
+
+        //set individual checkboxes to match the select/deselect all value
+        if (cell.type === 'checkbox') {
+            cell.checked = checkedVal;
+        }
+    }
 }
 
 function rowSelectedDeselected() {
