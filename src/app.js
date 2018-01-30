@@ -165,13 +165,13 @@ io.on('connection', function(socket) {
     });
 
     socket.on('AddTable', function(data) {
-        let newTableName = data.column;
+        let newTableName = data.table;
 
         function infoToClient(res) {
             socket.emit('AddTableConfirmation', res);
         }
 
-        if (newColumnName != null) {
+        if (newTableName != null) {
             queryDB(`create table if not exists \`${newTableName}\` ( id int auto_increment primary key )`, dbConnection, infoToClient);
         }
     });
