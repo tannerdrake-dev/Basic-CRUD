@@ -127,8 +127,59 @@ function init() {
             return;
         }
 
-        //make service request for all
-        Client.socket.emit('GetAllForTable', Client.selectedTable);
+        let keys = Client.domRefs.table.columnArray,
+            newRecID = data.rows[0].NewRecordID,
+            dataRow = document.createElement('tr'),
+            firstElementForFocus;
+
+        //add new record to table
+        for (let k = 0, l = keys.length; k < l; k++) {
+            let key = keys[k];
+
+            let tableData = document.createElement('td'),
+                cellElement;
+
+            if (k === 0) {
+                cellElement = document.createElement('input');
+                cellElement.id = `row-select-id${newRecID}`;
+                cellElement.type = 'checkbox';
+
+                cellElement.onchange = rowSelectedDeselected;
+                cellElement.modelData = {
+                    column: key,
+                    recordID: newRecID
+                }
+
+                firstElementForFocus = cellElement;
+            }
+
+            else {
+                cellElement = document.createElement('textarea');
+                cellElement.onblur = cellUpdated;
+
+                cellElement.className = 'cell-textarea';
+
+                if (k === 1) {
+                    //record id field will always be disabled
+                    cellElement.disabled = true;
+                    cellElement.value = newRecID;
+                }
+
+                cellElement.modelData = {
+                    column: key,
+                    prevValue: "",
+                    recordID: newRecID
+                }
+            }
+
+            tableData.appendChild(cellElement);
+            dataRow.appendChild(tableData);
+        }
+
+        Client.domRefs.table.appendChild(dataRow);
+
+        //focus onto the newly created record (scroll into focus if necessary)
+        firstElementForFocus.focus({preventScroll: false})
     });
 
     Client.socket.on('UpdateRecordConfirmation', function(data) {
@@ -158,10 +209,10 @@ function init() {
         let allRows = Array.prototype.slice.call(document.getElementsByTagName('tr'));
         for (let i = 0, j = allRows.length; i < j; i++) {
             let currRow = allRows[i],
-                rowID = null;
+                cell = currRow.childNodes[0].childNodes[0];
 
             //check row id and if index is in selected rows then remove it
-            if (currRow.childNodes[0].childNodes[0].modelData != null && Client.selectedRows.indexOf(currRow.childNodes[0].childNodes[0].modelData.recordID) > -1) {
+            if (cell.modelData != null && Client.selectedRows.indexOf(cell.modelData.recordID) > -1) {
                 Client.domRefs.table.removeChild(currRow);
             }
         }
@@ -376,13 +427,14 @@ function generateGrid(rows, fields) {
                     prevValue: currCol == null ? "" : currCol,
                     recordID: id
                 }
-            }            
+            }
 
             tableData.appendChild(cellElement);
             dataRow.appendChild(tableData);
         }
         
         Client.domRefs.table.appendChild(dataRow);
+        Client.domRefs.table.columnArray = keys;
     }
 }
 //#endregion

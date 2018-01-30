@@ -69,7 +69,17 @@ io.on('connection', function(socket) {
             socket.emit('GetNewRecord', res);
         }
 
-        queryDB(`insert into \`${table}\`() values()`, dbConnection, infoToClient);
+        function initialInsert (res) {
+            if (res.error != null) {
+                socket.emit('GetNewRecord', res);
+            }
+
+            else {
+                queryDB(`select max(\`id\`) as NewRecordID from \`${table}\``, dbConnection, infoToClient);
+            }
+        }
+
+        queryDB(`insert into \`${table}\`() values()`, dbConnection, initialInsert);
     });
 
     socket.on('DeleteRecord', function(rowData) {
