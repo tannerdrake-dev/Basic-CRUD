@@ -172,19 +172,19 @@ io.on('connection', function(socket) {
         }
 
         if (newColumnName != null) {
-            queryDB(``, dbConnection, infoToClient);
+            queryDB(`create table if not exists \`${newTableName}\` ( id int auto_increment primary key )`, dbConnection, infoToClient);
         }
     });
 
     socket.on('RemoveTable', function(data) {
-        let newColumnName = data.column;
+        let table = data.table;
 
         function infoToClient(res) {
             socket.emit('RemoveTableConfirmation', res);
         }
 
-        if (newColumnName != null) {
-            queryDB(``, dbConnection, infoToClient);
+        if (table != null) {
+            queryDB(`drop table if exists \`${table}\``, dbConnection, infoToClient);
         }
     });
 });
