@@ -258,8 +258,7 @@ function init() {
             if (Client.domRefs.columnList.childNodes.length > 0) {
                 newIndex = newIndex > -1 ? selectedColumnIndex : 0;
                 Client.domRefs.columnList.selectedIndex = newIndex;
-            }
-            
+            }            
 
             //call tableSelected to trigger record and column list building/updating
             tableSelected(true);
@@ -292,8 +291,7 @@ function init() {
             if (Client.domRefs.tableList.childNodes.length > 0) {
                 newIndex = newIndex > -1 ? newIndex : 0;
                 Client.domRefs.tableList.selectedIndex = newIndex;
-            }
-            
+            }            
 
             //call tableSelected to trigger record and column list building/updating
             tableSelected();
