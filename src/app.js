@@ -160,7 +160,7 @@ io.on('connection', function(socket) {
         }
 
         if (columnName != null) {
-            queryDB(`alter table \`${table}\` drop column \`${newColumnName}\``, dbConnection, infoToClient);
+            queryDB(`alter table \`${table}\` drop column \`${columnName}\``, dbConnection, infoToClient);
         }
     });
 

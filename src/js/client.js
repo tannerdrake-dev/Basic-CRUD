@@ -246,6 +246,24 @@ function init() {
             console.log(`RemoveColumnConfirmation error: ${data.error}`);
             return;
         }
+
+        //no errors, remove the column from list of column
+        let selectedColumnIndex = Client.domRefs.columnList.selectedIndex,
+            newIndex = selectedColumnIndex - 1;
+
+        if (selectedColumnIndex > -1) {
+            Client.domRefs.columnList.removeChild(Client.domRefs.columnList.childNodes[selectedColumnIndex]);
+
+            //select column below the removed column
+            if (Client.domRefs.columnList.childNodes.length > 0) {
+                newIndex = newIndex > -1 ? selectedColumnIndex : 0;
+                Client.domRefs.columnList.selectedIndex = newIndex;
+            }
+            
+
+            //call tableSelected to trigger record and column list building/updating
+            tableSelected(true);
+        }
     });
 
     Client.socket.on('AddTableConfirmation', function(data) {
@@ -271,7 +289,11 @@ function init() {
             Client.domRefs.tableList.removeChild(Client.domRefs.tableList.childNodes[selectedTableIndex]);
 
             //if there are tables then we initially select the first table
-            Client.domRefs.tableList.selectedIndex = newIndex;
+            if (Client.domRefs.tableList.childNodes.length > 0) {
+                newIndex = newIndex > -1 ? newIndex : 0;
+                Client.domRefs.tableList.selectedIndex = newIndex;
+            }
+            
 
             //call tableSelected to trigger record and column list building/updating
             tableSelected();
@@ -284,13 +306,13 @@ function init() {
 }
 
 //#region Functions
-function tableSelected() {
+function tableSelected(overrideIndexChangeCheck = false) {
     let currIndex = Client.domRefs.tableList.selectedIndex,
         table = Client.domRefs.tableList.childNodes[currIndex].value;
 
     Client.selectedTable = table;
 
-    if (currIndex == Client.prevSelectedTableIndex) {
+    if (currIndex == Client.prevSelectedTableIndex && overrideIndexChangeCheck === false) {
         //nothing changed don't continue on
         return;
     }
@@ -335,6 +357,13 @@ function newColumn() {
 function deleteColumn() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteColumn');
+    let selectedColumnIndex = Client.domRefs.columnList.selectedIndex,
+        selectedColumn;
+
+    if (selectedColumnIndex > -1) {
+        selectedColumn = Client.domRefs.columnList.childNodes[selectedColumnIndex].value;
+        Client.socket.emit('RemoveColumn', { table: Client.selectedTable, column: selectedColumn });
+    }
 }
 
 function newRecord() {
@@ -419,6 +448,12 @@ function buildColumnList(fields) {
 
     for (let i = 0, j = fields.length; i < j; i++) {
         let columnOption = document.createElement('option');
+
+        //cannot remove 'id' field
+        if (i === 0 || fields[i].name === 'id') {
+            continue;
+        }
+
         columnOption.value = columnOption.innerHTML = fields[i].name;
 
         Client.domRefs.columnList.appendChild(columnOption);
