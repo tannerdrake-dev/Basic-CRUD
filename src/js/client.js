@@ -21,7 +21,7 @@ function init() {
     let deleteRecordBtn = document.getElementById('delete-record-button');
     if (deleteRecordBtn != null) {
         Client.domRefs.deleteRecordBtn = deleteRecordBtn;
-        Client.domRefs.deleteRecordBtn.onclick = deleteRecord;
+        Client.domRefs.deleteRecordBtn.onclick = promptDeleteRecord;
     }
 
     let saveRecordBtn = document.getElementById('save-record-button');
@@ -50,7 +50,7 @@ function init() {
     let deleteTableBtn = document.getElementById('delete-table-button');
     if (deleteTableBtn != null) {
         Client.domRefs.deleteTableBtn = deleteTableBtn;
-        Client.domRefs.deleteTableBtn.onclick = deleteTable;
+        Client.domRefs.deleteTableBtn.onclick = promptDeleteTable;
     }
 
     let columnList = document.getElementById('column-list');
@@ -68,7 +68,42 @@ function init() {
     let deleteColumnBtn = document.getElementById('delete-column-button');
     if (deleteColumnBtn != null) {
         Client.domRefs.deleteColumnBtn = deleteColumnBtn;
-        Client.domRefs.deleteColumnBtn.onclick = deleteColumn;
+        Client.domRefs.deleteColumnBtn.onclick = promptDeleteColumn;
+    }
+
+    let promptDialog = document.getElementById('prompt-dialog');
+    if (promptDialog != null) {
+        Client.domRefs.promptDialog = promptDialog;
+    }
+
+    let promptLabel = document.getElementById('prompt-label');
+    if (promptLabel != null) {
+        Client.domRefs.promptLabel = promptLabel;
+    }
+
+    let promptTextArea = document.getElementById('prompt-textarea');
+    if (promptTextArea != null) {
+        Client.domRefs.promptTextArea = promptTextArea;
+    }
+
+    let deleteDialog = document.getElementById('delete-dialog');
+    if (deleteDialog != null) {
+        Client.domRefs.deleteDialog = deleteDialog;
+    }
+
+    let deleteLabel = document.getElementById('delete-label');
+    if (deleteLabel != null) {
+        Client.domRefs.deleteLabel = deleteLabel;
+    }
+
+    let deleteConfirmBtn = document.getElementById('delete-confirm-button');
+    if (deleteConfirmBtn != null) {
+        Client.domRefs.deleteConfirmBtn = deleteConfirmBtn;
+    }
+
+    let deleteCancelBtn = document.getElementById('delete-cancel-button');
+    if (deleteCancelBtn != null) {
+        Client.domRefs.deleteCancelBtn = deleteCancelBtn;
     }
     //#endregion
 
@@ -337,9 +372,12 @@ function newTable() {
     alert('newTable');
 }
 
-function deleteTable() {
+function promptDeleteTable() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteTable');
+}
+
+function deleteTable() {    
     let selectedTableIndex = Client.domRefs.tableList.selectedIndex,
         tableName;
     if (selectedTableIndex > -1) {
@@ -352,9 +390,12 @@ function newColumn() {
     alert('newColumn');
 }
 
-function deleteColumn() {
+function promptDeleteColumn() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteColumn');
+}
+
+function deleteColumn() {    
     let selectedColumnIndex = Client.domRefs.columnList.selectedIndex,
         selectedColumn;
 
@@ -369,9 +410,12 @@ function newRecord() {
     Client.socket.emit('NewRecord', Client.selectedTable);
 }
 
-function deleteRecord() {
+function promptDeleteRecord() {
     //TODO: prompt "are you sure, can't be undone etc"
     alert('deleteRecord');
+}
+
+function deleteRecord() {    
     Client.socket.emit('DeleteRecord', { table: Client.selectedTable, recordIDs: Client.selectedRows });
 }
 
