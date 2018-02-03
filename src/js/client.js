@@ -118,6 +118,7 @@ function init() {
     if (deleteCancelBtn != null) {
         Client.domRefs.deleteCancelBtn = deleteCancelBtn;
         Client.domRefs.deleteCancelBtn.onclick = function () {
+            //Client.domRefs.deleteConfirmBtn.onclick = null;
             Client.domRefs.deleteDialog.close();
         }
     }
@@ -287,8 +288,22 @@ function init() {
         if (data.error != null && data.error != "") {
             //error
             console.log(`AddColumnConfirmation error: ${data.error}`);
-            return;
+            let selectedColumnIndex = Client.domRefs.columnList.selectedIndex,
+            newIndex = selectedColumnIndex - 1;
+
+            if (selectedColumnIndex > -1) {
+                Client.domRefs.columnList.removeChild(Client.domRefs.columnList.childNodes[selectedColumnIndex]);
+
+                //select column below the removed column
+                if (Client.domRefs.columnList.childNodes.length > 0) {
+                    newIndex = newIndex > -1 ? selectedColumnIndex : 0;
+                    Client.domRefs.columnList.selectedIndex = newIndex;
+                }
+            }
         }
+
+        //call tableSelected to trigger record and column list building/updating
+        tableSelected(true);
     });
 
     Client.socket.on('RemoveColumnConfirmation', function(data) {
@@ -309,7 +324,7 @@ function init() {
             if (Client.domRefs.columnList.childNodes.length > 0) {
                 newIndex = newIndex > -1 ? selectedColumnIndex : 0;
                 Client.domRefs.columnList.selectedIndex = newIndex;
-            }            
+            }
 
             //call tableSelected to trigger record and column list building/updating
             tableSelected(true);
@@ -320,8 +335,24 @@ function init() {
         if (data.error != null && data.error != "") {
             //error
             console.log(`AddTableConfirmation error: ${data.error}`);
-            return;
+
+            //remove newly added table since it was not added correctly
+            let selectedTableIndex = Client.domRefs.tableList.selectedIndex,
+                newIndex = selectedTableIndex - 1;
+
+            if (selectedTableIndex > -1) {
+                Client.domRefs.tableList.removeChild(Client.domRefs.tableList.childNodes[selectedTableIndex]);
+
+                //if there are tables then we initially select the first table
+                if (Client.domRefs.tableList.childNodes.length > 0) {
+                    newIndex = newIndex > -1 ? newIndex : 0;
+                    Client.domRefs.tableList.selectedIndex = newIndex;
+                }
+            }
         }
+
+        //call tableSelected to trigger record and column list building/updating
+        tableSelected(true);
     });
 
     Client.socket.on('RemoveTableConfirmation', function(data) {
@@ -385,12 +416,33 @@ function columnSelected() {
 }
 
 function newTable() {
-    alert('newTable');
+    Client.domRefs.promptConfirmBtn.onclick = function () {
+        let tableName = Client.domRefs.promptTextArea.value;
+        if (tableName != null) {
+            Client.domRefs.promptConfirmBtn.onclick = null;
+            Client.domRefs.promptDialog.close();
+
+            let tableOption = document.createElement('option');
+            tableOption.value = tableOption.innerHTML = tableName;
+
+            Client.domRefs.tableList.appendChild(tableOption);
+
+            Client.domRefs.tableList.selectedIndex = Client.domRefs.tableList.childNodes.length - 1;
+
+            Client.socket.emit('AddTable', { table: tableName });
+        }
+    }
+
+    Client.domRefs.promptTextArea.value = "";
+    Client.domRefs.promptDialog.showModal();
 }
 
 function promptDeleteTable() {
-    //TODO: prompt "are you sure, can't be undone etc"
-    alert('deleteTable');
+    Client.domRefs.deleteConfirmBtn.onclick = function () {
+        deleteTable();
+    }
+
+    Client.domRefs.deleteDialog.showModal();
 }
 
 function deleteTable() {    
@@ -400,13 +452,38 @@ function deleteTable() {
         tableName = Client.domRefs.tableList.childNodes[selectedTableIndex].value;
         Client.socket.emit('RemoveTable', { table: tableName });
     }
+
+    Client.domRefs.deleteConfirmBtn.onclick = null;
+    Client.domRefs.deleteDialog.close();
 }
 
 function newColumn() {
-    alert('newColumn');
+    Client.domRefs.promptConfirmBtn.onclick = function () {
+        let columnName = Client.domRefs.promptTextArea.value;
+            tableName = Client.selectedTable;
+
+        if (columnName != null) {
+            Client.domRefs.promptConfirmBtn.onclick = null;
+            Client.domRefs.promptDialog.close();
+
+            let columnOption = document.createElement('option');
+            columnOption.value = columnOption.innerHTML = columnName;
+
+            Client.domRefs.columnList.appendChild(columnOption);
+
+            Client.socket.emit('AddColumn', { table: tableName, column: columnName });
+        }
+    }
+
+    Client.domRefs.promptTextArea.value = "";
+    Client.domRefs.promptDialog.showModal();
 }
 
 function promptDeleteColumn() {
+    Client.domRefs.deleteConfirmBtn.onclick = function () {
+        deleteColumn();
+    }
+
     Client.domRefs.deleteDialog.showModal();
 }
 
@@ -418,6 +495,9 @@ function deleteColumn() {
         selectedColumn = Client.domRefs.columnList.childNodes[selectedColumnIndex].value;
         Client.socket.emit('RemoveColumn', { table: Client.selectedTable, column: selectedColumn });
     }
+
+    Client.domRefs.deleteConfirmBtn.onclick = null;
+    Client.domRefs.deleteDialog.close();
 }
 
 function newRecord() {
@@ -426,12 +506,17 @@ function newRecord() {
 }
 
 function promptDeleteRecord() {
-    //TODO: prompt "are you sure, can't be undone etc"
-    alert('deleteRecord');
+    Client.domRefs.deleteConfirmBtn.onclick = function () {
+        deleteRecord();
+    }
+
+    Client.domRefs.deleteDialog.showModal();
 }
 
 function deleteRecord() {    
     Client.socket.emit('DeleteRecord', { table: Client.selectedTable, recordIDs: Client.selectedRows });
+    Client.domRefs.deleteConfirmBtn.onclick = null;
+    Client.domRefs.deleteDialog.close();
 }
 
 function cellUpdated() {
