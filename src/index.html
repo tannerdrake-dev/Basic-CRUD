@@ -41,6 +41,21 @@
                     Delete Column 
                 </button>
         </div>
+
+        <dialog id='prompt-dialog'>
+            <label id='prompt-label'>
+                Enter unique name:
+            </label>
+            <textarea id='prompt-textarea'></textarea>
+        </dialog>
+
+        <dialog id='delete-dialog'>
+            <label id='delete-label'>
+                Are you sure you want to delete? This cannot be undone.
+            </label>
+            <button id='delete-confirm-button'>Confirm</button>
+            <button id='delete-cancel-button'>Cancel</button>
+        </dialog>
     </body>
     <script src="js/enum.js"></script>
     <script src="js/client.js"></script>
