@@ -86,6 +86,19 @@ function init() {
         Client.domRefs.promptTextArea = promptTextArea;
     }
 
+    let promptConfirmBtn = document.getElementById('prompt-confirm-button');
+    if (promptConfirmBtn != null) {
+        Client.domRefs.promptConfirmBtn = promptConfirmBtn;
+    }
+
+    let promptCancelBtn = document.getElementById('prompt-cancel-button');
+    if (promptCancelBtn != null) {
+        Client.domRefs.promptCancelBtn = promptCancelBtn;
+        Client.domRefs.promptCancelBtn.onclick = function () {
+            Client.domRefs.promptDialog.close();
+        }
+    }
+
     let deleteDialog = document.getElementById('delete-dialog');
     if (deleteDialog != null) {
         Client.domRefs.deleteDialog = deleteDialog;
@@ -104,6 +117,9 @@ function init() {
     let deleteCancelBtn = document.getElementById('delete-cancel-button');
     if (deleteCancelBtn != null) {
         Client.domRefs.deleteCancelBtn = deleteCancelBtn;
+        Client.domRefs.deleteCancelBtn.onclick = function () {
+            Client.domRefs.deleteDialog.close();
+        }
     }
     //#endregion
 
@@ -391,8 +407,7 @@ function newColumn() {
 }
 
 function promptDeleteColumn() {
-    //TODO: prompt "are you sure, can't be undone etc"
-    alert('deleteColumn');
+    Client.domRefs.deleteDialog.showModal();
 }
 
 function deleteColumn() {    
