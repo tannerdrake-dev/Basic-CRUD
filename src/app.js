@@ -1,20 +1,19 @@
 "use strict";
 
-let express = require('express'),
-    http = require('http'),
-    socket = require('socket.io'),
-    uuid = require('uuid/v4'),
-    mysql = require('mysql'),
-    path = require('path');
-//import * as enum from '../js/enum';
+const express = require('express');
+const http = require('http');
+const socket = require('socket.io');
+const uuid = require('uuid/v4');
+const mysql = require('mysql');
+const path = require('path');
 
 //#region Variable Initialization
-let app = express(),
-    server = http.Server(app),
-    io = socket.listen(server),
-    port = process.env.PORT || 8081,
-    DB_NAME = process.env.DB || 'crud_demo',
-    cache = {};
+const app = express();
+const server = http.Server(app);
+const io = socket.listen(server);
+const port = process.env.PORT || 8081;
+const DB_NAME = process.env.DB || 'crud_demo';
+const cache = {};
 //#endregion
 
 //#region Serve Client Files
@@ -139,8 +138,8 @@ io.on('connection', function(socket) {
     });
 
     socket.on('AddColumn', function(data) {
-        let newColumnName = data.column,
-            table = data.table;
+        const newColumnName = data.column;
+        const table = data.table;
 
         function infoToClient(res) {
             socket.emit('AddColumnConfirmation', res);
@@ -152,8 +151,8 @@ io.on('connection', function(socket) {
     });
 
     socket.on('RemoveColumn', function(data) {
-        let columnName = data.column,
-            table = data.table;
+        const columnName = data.column;
+        const table = data.table;
 
         function infoToClient(res) {
             socket.emit('RemoveColumnConfirmation', res);
@@ -165,7 +164,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('AddTable', function(data) {
-        let newTableName = data.table;
+        const newTableName = data.table;
 
         function infoToClient(res) {
             socket.emit('AddTableConfirmation', res);
@@ -177,7 +176,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('RemoveTable', function(data) {
-        let table = data.table;
+        const table = data.table;
 
         function infoToClient(res) {
             socket.emit('RemoveTableConfirmation', res);
@@ -191,7 +190,7 @@ io.on('connection', function(socket) {
 //#endregion
 
 //#region MySQL DB connection
-let dbConnection = mysql.createConnection({
+const dbConnection = mysql.createConnection({
     host: 'localhost',
     user: 'crud_user',
     password: 'crudpassword',
@@ -234,7 +233,7 @@ function queryDB (query, connection, callback) {
 //#endregion
 
 //#region Logger
-let Logger = {
+const Logger = {
     types: {
         general: 0,
         dbEvent: 1,
